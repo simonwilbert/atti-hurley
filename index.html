@@ -1,238 +1,1138 @@
-<html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attihurley Arcade</title>
     <style>
-        h1 {text-decoration: underline; color: #a00;padding: 30px}
-        .about-heading {text-align: center;}
-        .animated-word {
-            animation: colour-shift 2s ease-in-out infinite alternate;
-            font-size: 2em;
-        }
-        .bouncing-mark {
-            display: inline-block;
-            animation: bounce 0.6s ease-in-out infinite alternate;
-            font-size: 2em;
-        }
-        @keyframes colour-shift {
-            from {color: #a00;}
-            to {color: #06c;}
-        }
-        @keyframes bounce {
-            from {transform: translateY(0);}
-            to {transform: translateY(-12px);}
-        }
-        .site-logo {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 300px;
-            height: auto;
-        }
-        .drawing-area {
-            margin: 30px;
-            max-width: 420px;
-        }
-        .drawing-toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-            margin: 0 0 10px;
-        }
-        .tool-button, .colour-button {
-            min-height: 34px;
-            border: 1px solid #777;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .tool-button.active, .colour-button.active {
-            outline: 3px solid #a00;
-            outline-offset: 1px;
-        }
-        .colour-button {
-            width: 34px;
-        }
-        .colour-picker {
-            width: 38px;
-            height: 34px;
-            padding: 2px;
-            cursor: pointer;
-        }
-        #drawing-canvas {
-            display: block;
-            width: 100%;
-            height: 220px;
-            border: 2px solid #a00;
-            border-radius: 6px;
-            background: #fff;
-            cursor: crosshair;
-            touch-action: none;
-        }
-        #clear-canvas {
-            margin-top: 10px;
-        }
-        #drawing-canvas[data-tool="fill"] {
-            cursor: cell;
-        }
-    </style>
-  <body>
-    <img class="site-logo" src="logo.png" alt="Attihurley logo">
-    <h1>Attihurley</h1>
-    <h2>Welcome to Attihurley</h2>
-    <p>This is the official website of Attihurley.</p>
-
-    <section class="drawing-area">
-      <h2>Have a draw</h2>
-      <div class="drawing-toolbar" aria-label="Drawing tools">
-        <button class="tool-button active" type="button" data-tool="brush" aria-pressed="true">Paintbrush</button>
-        <button class="tool-button" type="button" data-tool="fill" aria-pressed="false">Paint pot</button>
-        <button class="colour-button active" type="button" data-colour="#222222" aria-label="Black" title="Black" style="background: #222222" aria-pressed="true"></button>
-        <button class="colour-button" type="button" data-colour="#cc0000" aria-label="Red" title="Red" style="background: #cc0000" aria-pressed="false"></button>
-        <button class="colour-button" type="button" data-colour="#0066cc" aria-label="Blue" title="Blue" style="background: #0066cc" aria-pressed="false"></button>
-        <button class="colour-button" type="button" data-colour="#15803d" aria-label="Green" title="Green" style="background: #15803d" aria-pressed="false"></button>
-        <input class="colour-picker" id="colour-picker" type="color" value="#222222" aria-label="Choose a custom colour">
-      </div>
-      <canvas id="drawing-canvas" aria-label="Freeform drawing canvas"></canvas>
-      <button id="clear-canvas" type="button">Clear drawing</button>
-    </section>
-
-    <h1 class="about-heading">About Attihurley</h1>
-    <p>Drawing expert and creative artist. 
-        He likes maths and definitely <span class="animated-word">DRAWING</span><span class="bouncing-mark">!</span></p>
-
-
-
-
-
-    <script>
-      const canvas = document.getElementById('drawing-canvas');
-      const context = canvas.getContext('2d');
-      const colourPicker = document.getElementById('colour-picker');
-      const toolButtons = document.querySelectorAll('[data-tool]');
-      const colourButtons = document.querySelectorAll('[data-colour]');
-      let drawing = false;
-      let selectedTool = 'brush';
-      let selectedColour = '#222222';
-
-      function resizeCanvas() {
-        const bounds = canvas.getBoundingClientRect();
-        const image = context.getImageData(0, 0, canvas.width, canvas.height);
-        canvas.width = bounds.width;
-        canvas.height = bounds.height;
-        context.lineCap = 'round';
-        context.lineJoin = 'round';
-        context.lineWidth = 3;
-        context.strokeStyle = selectedColour;
-        if (image.width && image.height) context.putImageData(image, 0, 0);
+      :root {
+        --bg: #07111f;
+        --panel: rgba(8, 17, 30, 0.84);
+        --text: #fff5c3;
+        --accent: #ffd447;
+        --accent-2: #33d1ff;
+        --danger: #ff4d6d;
+        --wall: #1937a2;
       }
 
-      function pointFromEvent(event) {
-        const bounds = canvas.getBoundingClientRect();
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 32px 20px 48px;
+        color: var(--text);
+        font-family: "Trebuchet MS", "Avenir Next", sans-serif;
+        background:
+          radial-gradient(
+            circle at top,
+            rgba(51, 209, 255, 0.2),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at bottom left,
+            rgba(255, 212, 71, 0.16),
+            transparent 28%
+          ),
+          linear-gradient(180deg, #0d1830 0%, var(--bg) 55%, #04070d 100%);
+      }
+
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 12px;
+        color: var(--accent);
+        font-size: clamp(2.7rem, 8vw, 5.5rem);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-shadow: 0 0 16px rgba(255, 212, 71, 0.35);
+      }
+
+      h2 {
+        color: var(--accent-2);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .site-logo {
+        width: min(220px, 42vw);
+        height: auto;
+        justify-self: end;
+        filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.35));
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(140px, 240px);
+        gap: 24px;
+        align-items: start;
+        max-width: 1200px;
+        margin: 0 auto 24px;
+      }
+
+      .hero-copy {
+        padding: 30px;
+        border: 2px solid rgba(255, 212, 71, 0.2);
+        border-radius: 24px;
+        background: linear-gradient(
+          180deg,
+          rgba(12, 24, 43, 0.92),
+          rgba(6, 12, 22, 0.86)
+        );
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+      }
+
+      .eyebrow {
+        display: inline-block;
+        margin-bottom: 14px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(51, 209, 255, 0.14);
+        color: var(--accent-2);
+        font-size: 0.88rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero-copy p {
+        max-width: 56ch;
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+
+      .arcade {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, 720px) minmax(260px, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .game-shell,
+      .game-panel,
+      .about {
+        border-radius: 24px;
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        background: var(--panel);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
+      }
+
+      .game-shell {
+        padding: 18px;
+      }
+
+      .scoreboard {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .score-card {
+        padding: 12px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .score-card span {
+        display: block;
+      }
+
+      .score-label {
+        margin-bottom: 6px;
+        color: rgba(255, 245, 195, 0.72);
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .score-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+      }
+
+      .canvas-frame {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        border: 2px solid rgba(51, 209, 255, 0.25);
+        background: #02050b;
+      }
+
+      #game-canvas {
+        display: block;
+        width: 100%;
+        height: auto;
+        image-rendering: pixelated;
+      }
+
+      .status-banner {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: min(82%, 360px);
+        padding: 18px 20px;
+        border: 2px solid rgba(255, 212, 71, 0.3);
+        border-radius: 18px;
+        background: rgba(3, 8, 17, 0.92);
+        text-align: center;
+        backdrop-filter: blur(8px);
+      }
+
+      .status-banner[hidden] {
+        display: none;
+      }
+
+      .status-banner strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--accent);
+        font-size: 1.3rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .banner-subtext {
+        margin: 0;
+        color: rgba(255, 245, 195, 0.8);
+        line-height: 1.5;
+      }
+
+      .game-panel {
+        padding: 24px;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 18px 0 22px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font: inherit;
+        font-weight: 700;
+        color: #07111f;
+        background: var(--accent);
+        cursor: pointer;
+        transition:
+          transform 140ms ease,
+          box-shadow 140ms ease,
+          background 140ms ease;
+        box-shadow: 0 10px 24px rgba(255, 212, 71, 0.25);
+      }
+
+      button:hover,
+      button:focus-visible {
+        transform: translateY(-1px);
+        background: #ffe17d;
+      }
+
+      button.secondary {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: none;
+      }
+
+      .hint {
+        margin: 0 0 10px;
+        color: rgba(255, 245, 195, 0.78);
+        line-height: 1.6;
+      }
+
+      .controls-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin: 18px 0 22px;
+      }
+
+      .controls-grid div,
+      .legend li {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .legend {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .about {
+        max-width: 1200px;
+        margin: 24px auto 0;
+        padding: 24px;
+      }
+
+      .accent-word {
+        color: var(--accent);
+        text-shadow: 0 0 12px rgba(255, 212, 71, 0.28);
+      }
+
+      @media (max-width: 960px) {
+        .hero,
+        .arcade {
+          grid-template-columns: 1fr;
+        }
+
+        .site-logo {
+          justify-self: start;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding-inline: 12px;
+        }
+
+        .hero-copy,
+        .game-panel,
+        .about,
+        .game-shell {
+          padding: 18px;
+        }
+
+        .scoreboard {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .controls-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">Attihurley Arcade Cabinet</span>
+        <h1>Pac-Man</h1>
+        <p>
+          Chase pellets through a neon maze, dodge the ghosts, and clear the
+          board before they corner you. The whole game runs directly in this
+          page, so you can play immediately with the keyboard.
+        </p>
+      </div>
+      <img class="site-logo" src="logo.png" alt="Attihurley logo" />
+    </section>
+
+    <section class="arcade" aria-label="Pac-Man game">
+      <div class="game-shell">
+        <div class="scoreboard" aria-label="Game stats">
+          <div class="score-card">
+            <span class="score-label">Score</span>
+            <span class="score-value" id="score-value">0</span>
+          </div>
+          <div class="score-card">
+            <span class="score-label">Lives</span>
+            <span class="score-value" id="lives-value">3</span>
+          </div>
+          <div class="score-card">
+            <span class="score-label">Level</span>
+            <span class="score-value" id="level-value">1</span>
+          </div>
+          <div class="score-card">
+            <span class="score-label">Best</span>
+            <span class="score-value" id="best-value">0</span>
+          </div>
+        </div>
+
+        <div class="canvas-frame">
+          <canvas
+            id="game-canvas"
+            width="504"
+            height="600"
+            aria-label="Pac-Man game canvas"
+          ></canvas>
+          <div class="status-banner" id="status-banner">
+            <strong id="status-title">Ready?</strong>
+            <p class="banner-subtext" id="status-message">
+              Press Start Game, then use the arrow keys to move.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="game-panel">
+        <h2>How To Play</h2>
+        <p class="hint">
+          Eat every pellet to clear the maze. Power pellets turn ghosts blue for
+          a few seconds so you can chomp them for bonus points.
+        </p>
+        <div class="button-row">
+          <button id="start-button" type="button">Start Game</button>
+          <button class="secondary" id="restart-button" type="button">
+            Restart
+          </button>
+        </div>
+
+        <div class="controls-grid" aria-label="Controls">
+          <div><strong>Move:</strong> Arrow keys</div>
+          <div><strong>Pause:</strong> Space</div>
+          <div><strong>Goal:</strong> Clear all pellets</div>
+          <div><strong>Bonus:</strong> Eat frightened ghosts</div>
+        </div>
+
+        <ul class="legend" aria-label="Legend">
+          <li><strong>Pellet:</strong> 10 points</li>
+          <li><strong>Power pellet:</strong> 50 points</li>
+          <li><strong>Ghost:</strong> 200 points while frightened</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="about">
+      <h2>About Attihurley</h2>
+      <p>
+        Creative artist, game tinkerer, and certified fan of anything with
+        bright colours and sharp movement. This page now trades the sketchpad
+        for a full <span class="accent-word">arcade maze</span>.
+      </p>
+    </section>
+
+    <script>
+      const TILE = 24;
+      const DIRECTIONS = {
+        left: { x: -1, y: 0 },
+        right: { x: 1, y: 0 },
+        up: { x: 0, y: -1 },
+        down: { x: 0, y: 1 },
+      };
+      const OPPOSITE = {
+        left: "right",
+        right: "left",
+        up: "down",
+        down: "up",
+      };
+      const KEY_TO_DIRECTION = {
+        ArrowLeft: "left",
+        ArrowRight: "right",
+        ArrowUp: "up",
+        ArrowDown: "down",
+      };
+      const GHOST_GATE = { x: 10, y: 10 };
+      const BASE_MAZE = [
+        "#####################",
+        "#o.......#.......#.o#",
+        "#.###.###.#.###.###.#",
+        "#.#.....#.#.#.....#.#",
+        "#.#.###.#.#.#.###.#.#",
+        "#...................#",
+        "#.###.#.#####.#.###.#",
+        "#.....#...#...#.....#",
+        "#####.### # ###.#####",
+        "    #.#       #.#    ",
+        "#####.# ##-## #.#####",
+        "     .  #   #  .     ",
+        "#####.# ##### #.#####",
+        "    #.#       #.#    ",
+        "#####.# ##### #.#####",
+        "#.........#.........#",
+        "#.###.###.#.###.###.#",
+        "#o..#...........#..o#",
+        "###.#.#.#####.#.#.###",
+        "#.....#...#...#.....#",
+        "#.#######.#.#######.#",
+        "#...................#",
+        "#####################",
+      ];
+
+      const canvas = document.getElementById("game-canvas");
+      const context = canvas.getContext("2d");
+      const scoreValue = document.getElementById("score-value");
+      const livesValue = document.getElementById("lives-value");
+      const levelValue = document.getElementById("level-value");
+      const bestValue = document.getElementById("best-value");
+      const startButton = document.getElementById("start-button");
+      const restartButton = document.getElementById("restart-button");
+      const statusBanner = document.getElementById("status-banner");
+      const statusTitle = document.getElementById("status-title");
+      const statusMessage = document.getElementById("status-message");
+
+      const mazeWidth = BASE_MAZE[0].length;
+      const mazeHeight = BASE_MAZE.length;
+      const state = {
+        maze: [],
+        score: 0,
+        level: 1,
+        lives: 3,
+        pelletsRemaining: 0,
+        best: Number(localStorage.getItem("attihurley-pacman-best") || 0),
+        running: false,
+        paused: false,
+        gameOver: false,
+        frightenedUntil: 0,
+        roundStartedAt: 0,
+        lastTimestamp: 0,
+        pacman: null,
+        ghosts: [],
+      };
+
+      function cloneMaze() {
+        return BASE_MAZE.map((row) => row.split(""));
+      }
+
+      function countPellets() {
+        return state.maze.reduce(
+          (total, row) =>
+            total + row.filter((cell) => cell === "." || cell === "o").length,
+          0,
+        );
+      }
+
+      function makeEntity(tileX, tileY, direction, color, speed, releaseDelay = 0) {
         return {
-          x: (event.clientX - bounds.left) * (canvas.width / bounds.width),
-          y: (event.clientY - bounds.top) * (canvas.height / bounds.height)
+          x: tileX * TILE + TILE / 2,
+          y: tileY * TILE + TILE / 2,
+          startTileX: tileX,
+          startTileY: tileY,
+          direction,
+          requestedDirection: direction,
+          color,
+          speed,
+          radius: TILE * 0.38,
+          mode: "normal",
+          releaseDelay,
+          releaseAt: null,
         };
       }
 
-      function setTool(tool) {
-        selectedTool = tool;
-        canvas.dataset.tool = tool;
-        toolButtons.forEach((button) => {
-          const active = button.dataset.tool === tool;
-          button.classList.toggle('active', active);
-          button.setAttribute('aria-pressed', active);
-        });
+      function resetActors() {
+        state.pacman = makeEntity(
+          10,
+          17,
+          "left",
+          "#ffd447",
+          6.5 + state.level * 0.18,
+        );
+        state.pacman.radius = TILE * 0.62;
+        state.ghosts = [
+          makeEntity(10, 11, "left", "#ff4d6d", 5 + state.level * 0.12, 0),
+          makeEntity(9, 11, "right", "#33d1ff", 4.7 + state.level * 0.12, 2000),
+          makeEntity(11, 11, "up", "#ff9f1c", 4.9 + state.level * 0.12, 4500),
+        ];
       }
 
-      function setColour(colour) {
-        selectedColour = colour;
-        colourPicker.value = colour;
-        context.strokeStyle = colour;
-        colourButtons.forEach((button) => {
-          const active = button.dataset.colour.toLowerCase() === colour.toLowerCase();
-          button.classList.toggle('active', active);
-          button.setAttribute('aria-pressed', active);
-        });
+      function resetBoard(keepScore = true) {
+        state.maze = cloneMaze();
+        state.pelletsRemaining = countPellets();
+        state.frightenedUntil = 0;
+        resetActors();
+        if (!keepScore) {
+          state.score = 0;
+          state.level = 1;
+          state.lives = 3;
+        }
+        updateHud();
       }
 
-      function colourToRgba(colour) {
-        const value = parseInt(colour.slice(1), 16);
-        return [(value >> 16) & 255, (value >> 8) & 255, value & 255, 255];
+      function updateHud() {
+        scoreValue.textContent = state.score;
+        livesValue.textContent = state.lives;
+        levelValue.textContent = state.level;
+        bestValue.textContent = state.best;
       }
 
-      function floodFill(x, y) {
-        const image = context.getImageData(0, 0, canvas.width, canvas.height);
-        const {data, width, height} = image;
-        const startX = Math.max(0, Math.min(width - 1, Math.floor(x)));
-        const startY = Math.max(0, Math.min(height - 1, Math.floor(y)));
-        const startIndex = (startY * width + startX) * 4;
-        const target = [data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]];
-        const replacement = colourToRgba(selectedColour);
+      function setBanner(title, message, visible = true) {
+        statusTitle.textContent = title;
+        statusMessage.textContent = message;
+        statusBanner.hidden = !visible;
+      }
 
-        if (target.every((channel, index) => channel === replacement[index])) return;
+      function getTile(x, y) {
+        if (y < 0 || y >= mazeHeight) return "#";
+        const wrappedX = (x + mazeWidth) % mazeWidth;
+        return state.maze[y][wrappedX];
+      }
 
-        const matchesTarget = (index) => target.every((channel, offset) => data[index + offset] === channel);
-        const fill = (index) => replacement.forEach((channel, offset) => { data[index + offset] = channel; });
-        const pixelsToFill = [[startX, startY]];
+      function setTile(x, y, value) {
+        const wrappedX = (x + mazeWidth) % mazeWidth;
+        state.maze[y][wrappedX] = value;
+      }
 
-        while (pixelsToFill.length) {
-          const [currentX, currentY] = pixelsToFill.pop();
-          if (currentX < 0 || currentX >= width || currentY < 0 || currentY >= height) continue;
+      function tileAtPixel(x, y) {
+        return {
+          x: Math.floor(x / TILE),
+          y: Math.floor(y / TILE),
+        };
+      }
 
-          const index = (currentY * width + currentX) * 4;
-          if (!matchesTarget(index)) continue;
-          fill(index);
-          pixelsToFill.push(
-            [currentX + 1, currentY],
-            [currentX - 1, currentY],
-            [currentX, currentY + 1],
-            [currentX, currentY - 1]
-          );
+      function isWall(x, y) {
+        return getTile(x, y) === "#";
+      }
+
+      function isGate(x, y) {
+        return getTile(x, y) === "-";
+      }
+
+      function isCentered(entity) {
+        const centerX = Math.abs((entity.x - TILE / 2) % TILE);
+        const centerY = Math.abs((entity.y - TILE / 2) % TILE);
+        return centerX < 2 && centerY < 2;
+      }
+
+      function distanceToTileCenter(entity, direction) {
+        const tile = tileAtPixel(entity.x, entity.y);
+        const centerX = tile.x * TILE + TILE / 2;
+        const centerY = tile.y * TILE + TILE / 2;
+        const vector = DIRECTIONS[direction];
+
+        if (vector.x !== 0) return (centerX - entity.x) * vector.x;
+        return (centerY - entity.y) * vector.y;
+      }
+
+      function snapEntityToTileCenter(entity) {
+        const tile = tileAtPixel(entity.x, entity.y);
+        entity.x = tile.x * TILE + TILE / 2;
+        entity.y = tile.y * TILE + TILE / 2;
+      }
+
+      function canMove(entity, direction, allowGate = false) {
+        const vector = DIRECTIONS[direction];
+        const tile = tileAtPixel(entity.x, entity.y);
+        const targetX = tile.x + vector.x;
+        const targetY = tile.y + vector.y;
+        if (isWall(targetX, targetY)) return false;
+        if (!allowGate && isGate(targetX, targetY)) return false;
+        return true;
+      }
+
+      function isGhostInPen(ghost) {
+        const tile = tileAtPixel(ghost.x, ghost.y);
+        return tile.y >= 11 && tile.y <= 13 && tile.x >= 8 && tile.x <= 12;
+      }
+
+      function canLeavePen(ghost, now) {
+        const releaseAt = ghost.releaseAt ?? state.roundStartedAt + ghost.releaseDelay;
+        return (
+          ghost.mode !== "eyes" &&
+          isGhostInPen(ghost) &&
+          now >= releaseAt
+        );
+      }
+
+      function wrapEntity(entity) {
+        if (entity.x < -TILE / 2) entity.x = canvas.width + TILE / 2;
+        if (entity.x > canvas.width + TILE / 2) entity.x = -TILE / 2;
+      }
+
+      function moveEntity(entity, distance, allowGate = false) {
+        const vector = DIRECTIONS[entity.direction];
+        const remainingToCenter = distanceToTileCenter(
+          entity,
+          entity.direction,
+        );
+
+        if (!canMove(entity, entity.direction, allowGate)) {
+          if (remainingToCenter > 0) {
+            const step = Math.min(distance, remainingToCenter);
+            entity.x += vector.x * step;
+            entity.y += vector.y * step;
+            wrapEntity(entity);
+            return true;
+          }
+
+          return false;
         }
 
-        context.putImageData(image, 0, 0);
+        if (remainingToCenter > 0 && distance >= remainingToCenter) {
+          entity.x += vector.x * remainingToCenter;
+          entity.y += vector.y * remainingToCenter;
+          snapEntityToTileCenter(entity);
+          wrapEntity(entity);
+
+          const leftoverDistance = distance - remainingToCenter;
+          if (leftoverDistance > 0) {
+            entity.x += vector.x * leftoverDistance;
+            entity.y += vector.y * leftoverDistance;
+            wrapEntity(entity);
+          }
+
+          return true;
+        }
+
+        entity.x += vector.x * distance;
+        entity.y += vector.y * distance;
+        wrapEntity(entity);
+        return true;
       }
 
-      canvas.addEventListener('pointerdown', (event) => {
-        const point = pointFromEvent(event);
-        if (selectedTool === 'fill') {
-          floodFill(point.x, point.y);
+      function updatePacman(deltaSeconds) {
+        const pacman = state.pacman;
+        if (isCentered(pacman) && canMove(pacman, pacman.requestedDirection)) {
+          pacman.direction = pacman.requestedDirection;
+        }
+
+        const movement = pacman.speed * TILE * deltaSeconds;
+        if (!moveEntity(pacman, movement)) return;
+
+        const tile = tileAtPixel(pacman.x, pacman.y);
+        const cell = getTile(tile.x, tile.y);
+        if (cell === "." || cell === "o") {
+          state.score += cell === "o" ? 50 : 10;
+          state.pelletsRemaining -= 1;
+          setTile(tile.x, tile.y, " ");
+          if (cell === "o") state.frightenedUntil = performance.now() + 7000;
+          if (state.score > state.best) {
+            state.best = state.score;
+            localStorage.setItem("attihurley-pacman-best", String(state.best));
+          }
+          updateHud();
+        }
+      }
+
+      function pickGhostDirection(ghost, allowGate = false) {
+        const options = Object.keys(DIRECTIONS).filter((direction) => {
+          if (direction === OPPOSITE[ghost.direction]) return false;
+          return canMove(ghost, direction, allowGate);
+        });
+        if (options.length === 0) {
+          return canMove(ghost, OPPOSITE[ghost.direction], allowGate)
+            ? OPPOSITE[ghost.direction]
+            : ghost.direction;
+        }
+
+        const pacmanTile = tileAtPixel(state.pacman.x, state.pacman.y);
+        const ghostTile = tileAtPixel(ghost.x, ghost.y);
+
+        if (ghost.mode === "frightened") {
+          return options[Math.floor(Math.random() * options.length)];
+        }
+
+        return options.sort((left, right) => {
+          const leftVector = DIRECTIONS[left];
+          const rightVector = DIRECTIONS[right];
+          const leftDistance = Math.hypot(
+            pacmanTile.x - (ghostTile.x + leftVector.x),
+            pacmanTile.y - (ghostTile.y + leftVector.y),
+          );
+          const rightDistance = Math.hypot(
+            pacmanTile.x - (ghostTile.x + rightVector.x),
+            pacmanTile.y - (ghostTile.y + rightVector.y),
+          );
+          return leftDistance - rightDistance;
+        })[0];
+      }
+
+      function updateGhosts(deltaSeconds, now) {
+        const frightened = now < state.frightenedUntil;
+        state.ghosts.forEach((ghost) => {
+          if (ghost.mode !== "eyes")
+            ghost.mode = frightened ? "frightened" : "normal";
+          const speedMultiplier =
+            ghost.mode === "frightened"
+              ? 0.72
+              : ghost.mode === "eyes"
+                ? 1.35
+                : 1;
+
+          const allowGate = ghost.mode === "eyes" || canLeavePen(ghost, now);
+
+          if (isCentered(ghost)) {
+            const ghostTile = tileAtPixel(ghost.x, ghost.y);
+
+            if (canLeavePen(ghost, now)) {
+              if (ghostTile.x < GHOST_GATE.x) {
+                ghost.direction = "right";
+              } else if (ghostTile.x > GHOST_GATE.x) {
+                ghost.direction = "left";
+              } else {
+                ghost.direction = "up";
+              }
+            } else {
+              ghost.direction = pickGhostDirection(ghost, allowGate);
+            }
+
+            if (
+              ghost.mode === "eyes" &&
+              ghostTile.x === ghost.startTileX &&
+              ghostTile.y === ghost.startTileY
+            ) {
+              ghost.releaseAt = now + ghost.releaseDelay;
+              ghost.mode = frightened ? "frightened" : "normal";
+            }
+          }
+
+          if (!canMove(ghost, ghost.direction, allowGate)) {
+            ghost.direction = pickGhostDirection(ghost, allowGate);
+          }
+
+          const movement = ghost.speed * speedMultiplier * TILE * deltaSeconds;
+          moveEntity(ghost, movement, allowGate);
+        });
+      }
+
+      function handleCollisions() {
+        for (const ghost of state.ghosts) {
+          const distance = Math.hypot(
+            state.pacman.x - ghost.x,
+            state.pacman.y - ghost.y,
+          );
+          if (distance > TILE * 0.6) continue;
+
+          if (ghost.mode === "frightened") {
+            ghost.mode = "eyes";
+            ghost.direction = "up";
+            state.score += 200;
+            if (state.score > state.best) {
+              state.best = state.score;
+              localStorage.setItem(
+                "attihurley-pacman-best",
+                String(state.best),
+              );
+            }
+            updateHud();
+            continue;
+          }
+
+          if (ghost.mode === "normal") {
+            state.lives -= 1;
+            updateHud();
+            if (state.lives <= 0) {
+              state.running = false;
+              state.gameOver = true;
+              setBanner(
+                "Game Over",
+                "Press Restart to load a fresh board and try again.",
+              );
+              return;
+            }
+
+            resetActors();
+            state.running = false;
+            setBanner("Caught!", "Press Start Game to continue this run.");
+            return;
+          }
+        }
+      }
+
+      function finishLevel() {
+        state.level += 1;
+        state.running = false;
+        resetBoard(true);
+        setBanner("Level Cleared", "Press Start Game for a faster next round.");
+      }
+
+      function drawBurgerPellet(pixelX, pixelY) {
+        const centerX = pixelX + TILE / 2;
+        const centerY = pixelY + TILE / 2;
+
+        context.save();
+        context.translate(centerX, centerY);
+        context.rotate(Math.PI);
+
+        context.fillStyle = "#f4c15d";
+        context.beginPath();
+        context.ellipse(0, -2, 6, 3.5, 0, Math.PI, 0, true);
+        context.fill();
+
+        context.fillStyle = "#4caf50";
+        context.fillRect(-5, -1, 10, 1.8);
+
+        context.fillStyle = "#7a3f16";
+        context.fillRect(-5, 0.8, 10, 2.2);
+
+        context.fillStyle = "#f4c15d";
+        context.beginPath();
+        context.ellipse(0, 4, 6, 2.8, 0, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      }
+
+      function drawMaze() {
+        context.fillStyle = "#02050b";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let y = 0; y < mazeHeight; y += 1) {
+          for (let x = 0; x < mazeWidth; x += 1) {
+            const cell = state.maze[y][x];
+            const pixelX = x * TILE;
+            const pixelY = y * TILE;
+
+            if (cell === "#") {
+              context.fillStyle = "#1937a2";
+              context.fillRect(pixelX + 1, pixelY + 1, TILE - 2, TILE - 2);
+              context.strokeStyle = "rgba(51, 209, 255, 0.35)";
+              context.strokeRect(
+                pixelX + 2.5,
+                pixelY + 2.5,
+                TILE - 5,
+                TILE - 5,
+              );
+            }
+
+            if (cell === ".") {
+              drawBurgerPellet(pixelX, pixelY);
+            }
+
+            if (cell === "o") {
+              context.fillStyle = "#fff5c3";
+              context.beginPath();
+              context.arc(
+                pixelX + TILE / 2,
+                pixelY + TILE / 2,
+                6,
+                0,
+                Math.PI * 2,
+              );
+              context.fill();
+            }
+
+            if (cell === "-") {
+              context.fillStyle = "#ffb3c1";
+              context.fillRect(pixelX + 3, pixelY + TILE / 2 - 2, TILE - 6, 4);
+            }
+          }
+        }
+      }
+
+      function drawPacman(now) {
+        const pacman = state.pacman;
+        const walkSwing = Math.sin(now / 120) * 1.4;
+        const rotationMap = {
+          right: 0,
+          left: Math.PI,
+          up: -Math.PI / 2,
+          down: Math.PI / 2,
+        };
+
+        context.save();
+        context.translate(pacman.x, pacman.y);
+        context.rotate(rotationMap[pacman.direction] + Math.PI);
+
+        context.fillStyle = "#f3c892";
+        context.beginPath();
+        context.arc(0, -pacman.radius * 0.7, pacman.radius * 0.35, 0, Math.PI * 2);
+        context.fill();
+
+        context.fillStyle = pacman.color;
+        context.beginPath();
+        context.ellipse(0, 2, pacman.radius * 0.92, pacman.radius * 1.08, 0, 0, Math.PI * 2);
+        context.fill();
+
+        context.fillStyle = "#d18f3f";
+        context.fillRect(-pacman.radius * 0.72, -pacman.radius * 0.15, pacman.radius * 1.44, pacman.radius * 0.18);
+
+        context.fillStyle = "#2f2a6b";
+        context.beginPath();
+        context.ellipse(-pacman.radius * 0.3, pacman.radius * 1.22, pacman.radius * 0.16, pacman.radius * 0.34, walkSwing, 0, Math.PI * 2);
+        context.ellipse(pacman.radius * 0.3, pacman.radius * 1.22, pacman.radius * 0.16, pacman.radius * 0.34, -walkSwing, 0, Math.PI * 2);
+        context.fill();
+
+        context.strokeStyle = "#f3c892";
+        context.lineWidth = pacman.radius * 0.14;
+        context.lineCap = "round";
+        context.beginPath();
+        context.moveTo(-pacman.radius * 0.88, -pacman.radius * 0.1);
+        context.lineTo(-pacman.radius * 1.08, pacman.radius * 0.45 + walkSwing);
+        context.moveTo(pacman.radius * 0.88, -pacman.radius * 0.1);
+        context.lineTo(pacman.radius * 1.08, pacman.radius * 0.45 - walkSwing);
+        context.stroke();
+
+        context.fillStyle = "#1c1c1c";
+        context.beginPath();
+        context.arc(-pacman.radius * 0.12, -pacman.radius * 0.75, pacman.radius * 0.05, 0, Math.PI * 2);
+        context.arc(pacman.radius * 0.12, -pacman.radius * 0.75, pacman.radius * 0.05, 0, Math.PI * 2);
+        context.fill();
+
+        context.strokeStyle = "#7c5322";
+        context.lineWidth = pacman.radius * 0.1;
+        context.beginPath();
+        context.moveTo(pacman.radius * 0.95, pacman.radius * 0.02);
+        context.lineTo(pacman.radius * 1.86, -pacman.radius * 1.38);
+        context.stroke();
+
+        context.fillStyle = "#fff7dd";
+        context.strokeStyle = "#1c1c1c";
+        context.lineWidth = pacman.radius * 0.08;
+        context.fillRect(
+          pacman.radius * 0.88,
+          -pacman.radius * 1.82,
+          pacman.radius * 2.28,
+          pacman.radius * 1.08,
+        );
+        context.strokeRect(
+          pacman.radius * 0.88,
+          -pacman.radius * 1.82,
+          pacman.radius * 2.28,
+          pacman.radius * 1.08,
+        );
+
+        context.fillStyle = "#8d1f1f";
+        context.font = `${Math.max(10, pacman.radius * 0.34)}px Trebuchet MS`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(
+          "HELP ME",
+          pacman.radius * 2.02,
+          -pacman.radius * 1.28,
+        );
+        context.restore();
+      }
+
+      function drawGhost(ghost) {
+        const frightened = ghost.mode === "frightened";
+        const color = frightened
+          ? "#274cfe"
+          : ghost.mode === "eyes"
+            ? "#d7ecff"
+            : ghost.color;
+        const radius = ghost.radius;
+        const mouthColor = ghost.mode === "eyes" ? "#7da4c7" : "#2a0a0f";
+
+        context.save();
+        context.translate(ghost.x, ghost.y);
+
+        if (ghost.mode !== "eyes") {
+          context.fillStyle = color;
+          context.beginPath();
+          context.moveTo(-radius * 0.78, -radius * 0.48);
+          context.lineTo(-radius * 0.42, -radius * 1.02);
+          context.lineTo(-radius * 0.08, -radius * 0.4);
+          context.closePath();
+          context.fill();
+
+          context.beginPath();
+          context.moveTo(radius * 0.78, -radius * 0.48);
+          context.lineTo(radius * 0.42, -radius * 1.02);
+          context.lineTo(radius * 0.08, -radius * 0.4);
+          context.closePath();
+          context.fill();
+        }
+
+        context.fillStyle = color;
+        context.beginPath();
+        context.ellipse(0, 0, radius * 0.98, radius * 1.08, 0, 0, Math.PI * 2);
+        context.closePath();
+        context.fill();
+
+        context.fillStyle = mouthColor;
+        context.beginPath();
+        context.ellipse(0, radius * 0.18, radius * 0.56, radius * 0.36, 0, 0, Math.PI * 2);
+        context.fill();
+
+        if (ghost.mode !== "eyes") {
+          context.fillStyle = "#fff7dd";
+          const toothY = radius * 0.05;
+          const toothWidth = radius * 0.2;
+          const toothHeight = radius * 0.32;
+          [-0.36, -0.12, 0.12, 0.36].forEach((offset) => {
+            context.beginPath();
+            context.moveTo(radius * offset, toothY);
+            context.lineTo(radius * (offset + 0.1), toothY + toothHeight);
+            context.lineTo(radius * (offset + 0.2), toothY);
+            context.closePath();
+            context.fill();
+          });
+        }
+
+        context.fillStyle = "#ffffff";
+        context.beginPath();
+        context.arc(-radius * 0.34, -radius * 0.22, radius * 0.3, 0, Math.PI * 2);
+        context.arc(radius * 0.34, -radius * 0.22, radius * 0.3, 0, Math.PI * 2);
+        context.fill();
+
+        context.fillStyle = frightened ? "#ffffff" : "#09111f";
+        context.beginPath();
+        context.arc(-radius * 0.26, -radius * 0.14, radius * 0.13, 0, Math.PI * 2);
+        context.arc(radius * 0.42, -radius * 0.14, radius * 0.13, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      }
+
+      function draw(now) {
+        drawMaze();
+        drawPacman(now);
+        state.ghosts.forEach(drawGhost);
+      }
+
+      function loop(timestamp) {
+        if (!state.lastTimestamp) state.lastTimestamp = timestamp;
+        const deltaSeconds = Math.min(
+          (timestamp - state.lastTimestamp) / 1000,
+          0.033,
+        );
+        state.lastTimestamp = timestamp;
+
+        if (state.running && !state.paused && !state.gameOver) {
+          updatePacman(deltaSeconds);
+          updateGhosts(deltaSeconds, timestamp);
+          handleCollisions();
+          if (state.pelletsRemaining <= 0) finishLevel();
+        }
+
+        draw(timestamp);
+        requestAnimationFrame(loop);
+      }
+
+      function startGame() {
+        if (!state.running) state.roundStartedAt = performance.now();
+        state.running = true;
+        state.paused = false;
+        state.gameOver = false;
+        state.lastTimestamp = 0;
+        setBanner(
+          "Pac-Man",
+          "Clear the maze and stay away from the ghosts.",
+          false,
+        );
+      }
+
+      function restartGame() {
+        state.running = false;
+        state.paused = false;
+        state.gameOver = false;
+        resetBoard(false);
+        setBanner(
+          "Ready?",
+          "Press Start Game, then use the arrow keys to move.",
+        );
+      }
+
+      document.addEventListener("keydown", (event) => {
+        const direction = KEY_TO_DIRECTION[event.key];
+        if (direction) {
+          event.preventDefault();
+          state.pacman.requestedDirection = direction;
+          if (!state.running && !state.gameOver) startGame();
           return;
         }
 
-        drawing = true;
-        canvas.setPointerCapture(event.pointerId);
-        context.beginPath();
-        context.moveTo(point.x, point.y);
-        context.arc(point.x, point.y, context.lineWidth / 2, 0, Math.PI * 2);
-        context.fillStyle = selectedColour;
-        context.fill();
-        context.beginPath();
-        context.moveTo(point.x, point.y);
+        if (event.code === "Space" && !state.gameOver) {
+          event.preventDefault();
+          state.paused = !state.paused;
+          if (state.paused) {
+            setBanner("Paused", "Press Space to resume.");
+          } else {
+            setBanner("Pac-Man", "Back in play.", false);
+          }
+        }
       });
 
-      canvas.addEventListener('pointermove', (event) => {
-        if (!drawing) return;
-        const point = pointFromEvent(event);
-        context.lineTo(point.x, point.y);
-        context.stroke();
-      });
+      startButton.addEventListener("click", startGame);
+      restartButton.addEventListener("click", restartGame);
 
-      function stopDrawing() {
-        drawing = false;
-      }
-
-      canvas.addEventListener('pointerup', stopDrawing);
-      canvas.addEventListener('pointercancel', stopDrawing);
-      toolButtons.forEach((button) => button.addEventListener('click', () => setTool(button.dataset.tool)));
-      colourButtons.forEach((button) => button.addEventListener('click', () => setColour(button.dataset.colour)));
-      colourPicker.addEventListener('input', (event) => setColour(event.target.value));
-      document.getElementById('clear-canvas').addEventListener('click', () => {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-      });
-
-      resizeCanvas();
-      setTool(selectedTool);
-      setColour(selectedColour);
-      window.addEventListener('resize', resizeCanvas);
+      resetBoard(false);
+      setBanner(
+        "Ready?",
+        "Press Start Game, then use the arrow keys to move.",
+      );
+      draw(performance.now());
+      requestAnimationFrame(loop);
     </script>
   </body>
 </html>
